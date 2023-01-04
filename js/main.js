@@ -1,112 +1,88 @@
-$(function(){
-    let duration = 300;
-    /**************버튼 1 ****************/
-    //1행
-    $('#buttons1 button:nth-child(-n+4)') //1->3, 2->2, 3->1, 4->0, 5->-1, 6 -> -2....3n
-       .on('mouseenter', function(){
-            $(this).stop(true).animate({
-                backgroundColor: '#ae5e9b',
-                color: '#fff'
-            }, duration);
+window.onload = function () {
+   let sw = window.innerWidth;
+   //console.log(sw);
+   //banner,banner>li,leftBtn,rightBtn,mbPager
+   let mainBanner = document.querySelector(".main-banner");
+   let mbSlide = document.querySelectorAll(".mb-slide");
+   let mbPrev = document.querySelector(".mb-prev");
+   let mbNext = document.querySelector(".mb-next");
+   let mbPager = document.querySelectorAll(".mb-btn");
+   //슬라이드 개별 활성화, 페이지 표시 변수(0~2)
+   let pageNum = 0;
+   //몇번째 배너가 보이고 있는지를 체크할 변수(0~2)
+   //let showBanner = 0;
+   //배너 한개의 너비값 clientWidth 
+   let liWidth = mbSlide[0].clientWidth;
+   //이동할 거리
+   let moveX = 0;
+
+   //초기에 활성화될 슬라이드
+   mbSlide[pageNum].classList.add("active");
+
+
+   //창의 크기 인지
+   window.onresize = function () {
+        liWidth = mbSlide[0].clientWidth;
+        pageNum = 0;
+        moveX = 0;
+        moveSlide();
+        activeControl();
+   };
+
+
+   let moveSlide = () => {
+       moveX = -liWidth * pageNum;
+       mainBanner.style.transform = `translateX(${moveX}px)`;
+   }
+   let activeControl = () => {
+       //모든 페이지버튼, 슬라이드 활성화 원상복귀
+       for (i = 0; i < mbPager.length; i++) {
+           mbPager[i].classList.remove("active");
+           //mbSlide[i].classList.remove("active");
+       }
+       //클릭한 버튼만 active class
+       mbPager[pageNum].classList.add("active");
+       //클릭한 버튼 번호에 해당하는 슬라이드만 active class
+       //mbSlide[pageNum].classList.add("active");
+   }
+   
+   mbPager.forEach((btn, id) => {
+       mbPager[id].addEventListener("click", function () {
+           //클릭한 페이지버튼 인덱스 저장
+           pageNum = id;
+           //showBanner = id;
+           //if(showBanner >= 2 ? showBanner = 2 : showBanner = showBanner);
+           moveSlide();
+           activeControl();
        })
-       .on('mouseleave', function(){
-            $(this).stop(true).animate({
-                backgroundColor: '#fff',
-                color: '#ebc000'
-            }, duration);
-       });
-    //2행
-    $('#buttons1 button:nth-child(n+5):nth-child(-n+8)')
-        .on('mouseenter', function(){
-            $(this).stop(true).animate({
-                borderWidth: '12px',
-                color: "#ae5e9b"
-            }, duration);
-        })
-        .on('mouseleave', function(){
-            $(this).stop(true).animate({
-                borderWidth: '0px',
-                color: "#ebc000"
-            }, duration);
-        }); 
-    //3행
-    $('#buttons1 button:nth-child(n+9)')
-        .on('mouseenter', function(){
-            $(this).find('>span').stop().animate({width: '100%'}, duration);
-        })
-        .on('mouseleave', function(){
-            $(this).find('>span').stop().animate({width: '0%'}, duration);
-        }); 
+   })
 
-    let $images = $('#images p');
-    //첫번째 이미지
-    $images.filter(':nth-child(1)')
-        .on('mouseover', function(){
-            $(this).find('strong, span').stop().animate({opacity: 1}, duration);
-        })
-        .on('mouseout', function(){
-            $(this).find('strong, span').stop().animate({opacity: 0}, duration);
-        });
+   function moveRight() {
+       //console.log("right");
+       //if (showBanner == mbSlide.length - 1 ? showBanner = 0 : showBanner++);
+       //moveSlide();
+       if (pageNum == mbSlide.length - 1 ? pageNum = 0 : pageNum++);
+       moveSlide();
+       activeControl();
+   }
+   function moveLeft() {
+       //console.log("left");
+       //if(showBanner == 0 ? showBanner = 2 : showBanner--);
+       //moveSlide();
+       if(pageNum == 0 ? pageNum = 2 : pageNum--);
+       moveSlide();
+       activeControl();
+   }
 
-    /**************버튼 2 ****************/
-    //buttons2의 top위치를 조절
-    $('#buttons2 button').each(function(index){ //each:반복문
-        let pos = index*40-40;
-        $(this).css('top', pos);
-    })
-    .on('mouseover', function(){
-        let $btn = $(this).stop(true).animate({
-            backgroundColor: '#faee00',
-            color: '#000'
-        }, duration);
-        $btn.find('img:first-child').stop(true).animate({opacity: 0}, duration);
-        $btn.find('img:nth-child(2)').stop(true).animate({opacity: 1}, duration);
-    })
-    .on('mouseout', function(){
-        let $btn = $(this).stop().animate({
-            backgroundColor: '#fff',
-            color: '#01b169'
-        }, duration);
-        $btn.find('img:first-child').stop().animate({opacity: 1}, duration);
-        $btn.find('img:nth-child(2)').stop().animate({opacity: 0}, duration);
-    });
-    /**************이미지 ****************/
-    //두번째 이미지
-    $images.filter(':nth-child(2)')
-    .on('mouseover', function(){
-        $(this).find('strong').stop().animate({opacity: 1, left: '0%'}, duration);
-        $(this).find('span').stop().animate({opacity: 1}, duration);
-    })
-    .on('mouseout', function(){
-        $(this).find('strong').stop().animate({opacity: 0, left: '-200%'}, duration);
-        $(this).find('span').stop().animate({opacity: 0}, duration);
-    });
+   //오른쪽 버튼을 클릭하면 moveRight함수 호출
+   mbNext.addEventListener("click", moveRight);
 
-    //세번째 이미지
-    $images.filter(':nth-child(3)')
-    .on('mouseover', function(){
-        $(this).find('strong').stop().animate({bottom: '0px'}, duration);
-        $(this).find('span').stop().animate({opacity: 1}, duration);
-        $(this).find('img').stop().animate({top: '-20px'}, duration*1.3);
-    })
-    .on('mouseout', function(){
-        $(this).find('strong').stop().animate({bottom: '-80px'}, duration);
-        $(this).find('span').stop().animate({opacity: 0}, duration);
-        $(this).find('img').stop().animate({top: '0px'}, duration*1.3);
-    });
+   //왼쪽 버튼을 클릭하면 moveLeft함수 호출
+   mbPrev.addEventListener("click", moveLeft);
 
-    /************ aside  *****************/
-    let $aside = $('.page-main > aside');
-    let $asideButton = $aside.find('button')
-                    .on('click', function(){
-                        $aside.toggleClass('open');
-                        if($aside.hasClass('open')){ //hasclass:class여부 확인
-                            $aside.stop().animate({left: '-70px'}, duration, 'easeOutBack');
-                            $asideButton.find('img').attr('src', 'img/btn_close.png');
-                        } else {
-                            $aside.stop().animate({left: '-350px'}, duration, 'easeInBack');
-                            $asideButton.find('img').attr('src', 'img/btn_open.png');
-                        }
-                    });
-       
-});
+
+
+
+
+}
+
